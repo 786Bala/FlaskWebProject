@@ -10,22 +10,33 @@ import numpy as np
 import xgboost as xgb
 import json
 import sys
-sys.path.append(r'E:\Testing\Python\PredictionModel\pickle')
+sys.path.append(r'R:\OneDrive\Desktop\ZenMinds\Model_Code\Pickles')
 from src import calculations,predictions
 import requests
+import pyodbc
+from pandas.io import sql
+import urllib
+from sqlalchemy import create_engine
 
-#df1 = pd.read_csv(r'R:\OneDrive\Desktop\input.csv')
-df1 = pd.DataFrame(requests.get("http://arunprabus-001-site1.etempurl.com/api/ScoredDetails/1").json())
-df = df1.tail(1)
-#f = open(r'C:\Users\dearr\Downloads\response.json')
-#data = json.load(data)
-#df = pd.DataFrame.from_dict(data, orient='columns')
-#df = df.rename({'inningsId': 'inning', 'score': 'tot_runs'}, axis='columns')
-#df = pd.read_csv(r'C:\Users\dearr\OneDrive\Desktop\Book2.csv')
+url = 'http://arunprabus-001-site1.etempurl.com/api/ScoredDetails/2'
 
-df = calculations.get_additional_parameters(df)
-df = predictions.predict_values(df)
+def odds_final(url):
+    df1 = pd.DataFrame(requests.get(url).json())
+#    df1 = pd.read_csv(r'R:\OneDrive\Desktop\input.csv')
+    df = df1.tail(1)
+    df = calculations.get_additional_parameters(df)
+    df = predictions.predict_values(df)
+    conn = pyodbc.connect('Driver={SQL Server};'
+                          'Server=SQL5080.site4now.net;'
+                          'Database=db_a75b59_arunprabus;'
+                          'uid=db_a75b59_arunprabus_admin;pwd=_Cs32Nr4kccQQ7M')
+    cursor = conn.cursor()
+    quoted = urllib.parse.quote_plus("DRIVER={SQL Server};SERVER=SQL5080.site4now.net;DATABASE=db_a75b59_arunprabus;uid=db_a75b59_arunprabus_admin;pwd=_Cs32Nr4kccQQ7M")
+    engine = create_engine('mssql+pyodbc:///?odbc_connect={}'.format(quoted))
+    df.to_sql(con=engine, name='final_table', if_exists='append')
+    return 0
 
-d = df.to_json(orient='records')
+h = odds_final(url)
+
 
 
