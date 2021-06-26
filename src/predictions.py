@@ -9,20 +9,13 @@ import pickle
 import pandas as pd
 import xgboost as xgb
 
-def predict_values(df):
+def predict_values(df,modelodds, model5, model6, model10, model15, model20):
     x_cols = ['inning', 'total_runs', 'ballsRemaining','wicketsRemaining', 'tot_runs', 'score_target', 'remaining_target', 'runrate', 'required_run_rate', 'runrate_diff', 'is_batting_team']
     val_X = np.array(df[x_cols[:]])
     test1 = pd.DataFrame(val_X[0])
     test1 = np.array(test1.transpose())
     xgtest = xgb.DMatrix(test1)
-    
-    modelodds = pickle.load(open(r'E:\Testing\Python\PredictionModel\pickle\ballbyballodds.pkl','rb'))
-    model5 = pickle.load(open(r'E:\Testing\Python\PredictionModel\pickle\overs_5.pkl','rb'))
-    model6 = pickle.load(open(r'E:\Testing\Python\PredictionModel\pickle\overs_6.pkl','rb'))
-    model10 = pickle.load(open(r'E:\Testing\Python\PredictionModel\pickle\overs_10.pkl','rb'))
-    model15 = pickle.load(open(r'E:\Testing\Python\PredictionModel\pickle\overs_15.pkl','rb'))
-    model20 = pickle.load(open(r'E:\Testing\Python\PredictionModel\pickle\overs_20.pkl','rb'))
-    
+        
     df['pred_odds'] = modelodds.predict(xgtest)
     df['team1_probability'] = df['pred_odds']
     df['team1_odds'] = 1/df['team1_probability']
