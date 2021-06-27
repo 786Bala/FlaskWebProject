@@ -28,7 +28,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="app.py" />
-    <Compile Include="Flask_Output.py" />
     <Compile Include="src\calculations.py" />
     <Compile Include="src\predictions.py" />
   </ItemGroup>
